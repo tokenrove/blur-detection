@@ -1,0 +1,215 @@
+
+This comes from some work I did on a contract a few years ago.  While
+I obviously can't publish everything related to that work, I had
+retained the copyright to some of the low-level implementations
+exactly so that I could open source them later.
+
+What follows are some notes I had written about a broader approach
+that was built on this code.  I expect that research in this area has
+since surpassed this approach.
+
+* Overview
+
+This is an attempt to synthesize an algorithm for automatic ranking of
+digital photographs, based on the following basic assumptions about
+quality:
+
+ - good photos have the subject matter in focus;
+ - the focal mass will generally lie close to the points defined by the rule of thirds;
+ - the subject matter will also be separated from the background by brightness and saturation.
+
+We note that the sharpness of a region is a reasonable predictor of
+focus, as most prominent subject matter contains detailed edge
+structures that are destroyed by out-of-focus/motion blur.
+
+After the description of the algorithm and the work on which it is
+based, I discuss directions for improvement.
+
+* Review of Prior Work
+
+Our approach broadly builds upon the approach suggested by Lim, Yen,
+and Wu[fn:lim-yen-wu], though their goal is simply making a
+decision as to whether an image is out-of-focus or not.
+
+A related set of ideas for determining the aesthetic value of an image
+is given by Liu et al.[fn:liu-et-al], but their focus is on
+reframing an existing image to capture the most aesthetic possible
+cropping of an image.
+
+* Description of the Algorithm
+
+Given an image, we first decompose it into square blocks of pixels.
+We have chosen 64x64 pixels rather than the arbitrary 100x100
+suggested in [fn:lim-yen-wu] to facilitate the incorporation of
+Discrete Cosine Transform (DCT) information in the common case that
+the image is JPEG encoded.
+
+** Blockwise Metrics
+
+For each block, we compute the hue, saturation, and intensity of each
+pixel.  Note that it might be possible to speed up the algorithm here
+by skipping this computation and using only luminance values for
+blurred blocks.
+
+We wish to make a boolean decision about whether this block is likely
+to be in focus, based on whether the sharpness of this block exceeds a
+threshold.  In the present implementation, we have three different
+sharpness metrics.  We will describe each, as well as a proposed
+unification of the methods.
+
+** Sharpness via DCT coefficients
+
+In the case that we have access to DCT information, we can perform a
+simple histogram algorithm due to Marichal, Ma, and Zhang
+([fn:marichal-ma-zhang]).  For each 8x8 DCT block in this image
+block, we count the occurance of coefficients greater than a minimum
+value in a histogram.  After each DCT block has been considered, we
+compare each value in the histogram against the histogram value for
+the first coefficient (0,0), summing a weighted value when the value
+exceeds a threshold.
+
+This provides an extremely rapid approximation of blur extent.  In the
+case that this value exceeds certain thresholds, it would be possible
+to skip further computation of more accurate sharpness metrics.
+
+** Sharpness via a Wavelet-based Edge Detector
+
+Tong et al.[fn:tong-li-zhang-zhang] present an approach to blur
+estimation based on the Haar wavelet transform, whereby specific edge
+structures can be detected, and the ratio of Dirac and abrupt-step
+structures to roof and gradual step edge structures provides an
+acceptable estimation of the sharpness of the given block.
+
+In our case, we have modified this algorithm to skip the windowing
+step, as we felt that adjusting the thresholds by which a point was
+classified was more effective than performing non-maximum suppression
+(NMS).
+
+Unfortunately, even without NMS, this is the most computationally
+expensive of the algorithms implemented.
+
+In his master's thesis [fn:ramakrishnan-thesis], Harish Ramakrishnan
+presents some variants on this approach and evaluates their
+performance.
+
+** Sharpness via an IIR Filter
+
+Shaked and Tastl[fn:shaked-tastl] derive a model of sharpness based
+on the ratio between high-frequency data and low-frequency data, and
+present an approach to computing this metric via a pair of
+one-dimensional IIR filters.  The advantage of this decomposable
+approach is that rows or columns can be skipped to speed up the
+process at the cost of accuracy.
+
+Presently we use simple Butterworth high- and low-pass filters on row
+and column data to compute the sharpness metric.  However, it seems
+likely that better filter designs could help improve the accuracy and
+performance of this model.
+
+** Alternative Sharpness Measures
+
+A Canny edge detector could be used in much the same way as the Haar
+transform approach given above.  It is possible that this could be
+more efficient.
+
+Another alternative, discussed in [fn:ramakrishnan-thesis], is the
+perceptual blur metric given by Marziliano et al. in
+[fn:marziliano-et-al].  We have thus far not considered using this
+blur metric as it seems less efficient than the methods we already
+implement.
+
+** Combining Sharpness Metrics
+
+In general, we avoid using the IIR filter in preference to the wavelet
+transform approach or the DCT coefficient histogram.  Ideally, we
+would use the fastest and least-accurate methods (DCT coefficients,
+IIR filter with a large row/column skip) to eliminate clearly blurry
+blocks, and then only use the more expensive wavelet transform
+approach on blocks whose sharpness isn't evident.
+
+** Other block-level metrics
+
+Along with a sharpness value for each block, we also compute the means
+of the block's hue, intensity, and saturation values, as well as a
+ratio of the number of pixels having a hue similar to that of blue sky
+(per [fn:lim-yen-wu]).
+
+** Global merits
+
+Having computed these metrics for each block in the image, we compute
+several global indicators of quality.  Blocks whose dominant hue is
+that of blue sky are ignored during this process.
+
+We compute a composition score as a sum of the blocks which are sharp,
+weighted by the Manhattan distance of the block from one of the four
+``power points'' representing intersections of the division of the
+image in thirds, as per the rule of thirds.
+
+We compute brightness and saturation indices as the difference between
+the mean of those values for blocks considered sharp and the mean of
+those values for the remaining blocks.
+
+We also compute the density of sharp blocks, as the ratio of sharp
+blocks to unsharp ones, and the median block sharpness.
+
+** Weighted ranking
+
+This is where work needs to proceed: improving the quality of indices
+other than composition so they can be combined with appropriate
+weights to produce a single ranking value.
+
+Presently we can provide a ranking based on Lim et al.'s process for
+deciding if an image is in focus: compute the sum of composition,
+brightness, and saturation weighted by density and median sharpness,
+as well as individual weights prioritizing composition over brightness
+and saturation.
+
+* Directions for Further Work
+
+The composition weighting could be improved in a number of ways.
+Perhaps the Manhattan distance from a power point is insufficient, and
+a more sophisticated model of the rule of thirds is required.  Another
+possible direction is incorporating the idea of balanced masses as
+discussed in [fn:liu-et-al]; note that within our presented
+approach, we could simplify that scheme by considering each block a
+unit of mass based on its sharpness value.
+
+Lim et al.'s sky hue ratio is questionable and it remains to be seen
+if it is indeed an effective metric for our purposes.
+
+* References
+
+[fn:lim-yen-wu] Suk Hwan Lim, Jonathan Yen, Peng Wu,
+  *Detection of Out-Of-Focus Digital Photographs*,
+  HPL-2005-14,
+  2005.
+
+[fn:tong-li-zhang-zhang] Hanghang Tong, Mingjing Li, Hongjiang Zhang, Changshui Zhang,
+  *Blur detection for digital images using wavelet transform*,
+  Proceedings of the IEEE International Conference on Multimedia & Expo,
+  2004.
+
+[fn:marichal-ma-zhang] Xavier Marichal, Wei-Ying Ma, Hongjiang Zhang,
+  *Blur determination in the compressed domain using DCT information*,
+  Proceedings of the IEEE ICIP, pp.386-390,
+  1999.
+
+[fn:liu-et-al] Ligang Liu, Renjie Chen, Lior Wolf, Daniel Cohen-Or,
+  *Optimizing Photo Composition*,
+  Computer Graphics Forum, 29: 469-478,
+  2010.
+
+[fn:ramakrishnan-thesis] Harish Ramakrishnan,
+  *Detection and Estimation of Image Blur*,
+  Master's Thesis,
+  2010.
+
+[fn:shaked-tastl] Dored Shaked, Ingeborg Tastl,
+  *Sharpness Measure: Towards Automatic Image Enhancement*,
+  HPL-2004-84,
+  2004.
+
+[fn:marziliano-et-al] Marziliano, P.; Dufaux, F.; Winkler, S.; Ebrahimi, T;
+  *A no-reference perceptual blur metric*,
+  Proceedings of International Conference on Image Processing,
+  2002.

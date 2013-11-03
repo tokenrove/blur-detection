@@ -1,0 +1,22 @@
+
+BINDIR = ;
+
+#### Analysis programs
+
+CCFLAGS += -Wall -pedantic -std=c99 -O6 -fomit-frame-pointer -g -I/usr/local/include ;
+LINKFLAGS += -L/usr/local/lib ;
+
+#if $(OS) = NT { CCFLAGS += -Iw32-build ; LINKFLAGS += -Lw32-build ; }
+
+Main blur-detection : lim-yen-wu.c tong-li-zhang-zhang.c image.c ;
+LINKLIBS on blur-detection$(SUFEXE) += -lm -ljpeg ;
+
+Main marichal-ma-zhang : marichal-ma-zhang.c ;
+LINKLIBS on marichal-ma-zhang$(SUFEXE) += -lm -ljpeg ;
+
+Main tong-li-zhang-zhang : tong-li-zhang-zhang.c tlzz-main.c image.c ;
+LINKLIBS on tong-li-zhang-zhang$(SUFEXE) += -lm -ljpeg ;
+
+LOCATE on blur-detection$(SUFEXE) marichal-ma-zhang$(SUFEXE) tong-li-zhang-zhang$(SUFEXE) = $(BINDIR) ;
+
+#### remainder excised
