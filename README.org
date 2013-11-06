@@ -1,3 +1,4 @@
+#+OPTIONS: f:t
 
 This comes from some work I did on a contract a few years ago.  While
 I obviously can't publish everything related to that work, I had
@@ -180,36 +181,36 @@ if it is indeed an effective metric for our purposes.
 * References
 
 [fn:lim-yen-wu] Suk Hwan Lim, Jonathan Yen, Peng Wu,
-  *Detection of Out-Of-Focus Digital Photographs*,
+  [[http://www.hpl.hp.com/techreports/2005/HPL-2005-14.html][*Detection of Out-Of-Focus Digital Photographs*]],
   HPL-2005-14,
   2005.
 
 [fn:tong-li-zhang-zhang] Hanghang Tong, Mingjing Li, Hongjiang Zhang, Changshui Zhang,
-  *Blur detection for digital images using wavelet transform*,
+  [[http://cs.cmu.edu/~htong/pdf/ICME04_tong.pdf%E2%80%8E%0A][*Blur detection for digital images using wavelet transform*]],
   Proceedings of the IEEE International Conference on Multimedia & Expo,
   2004.
 
 [fn:marichal-ma-zhang] Xavier Marichal, Wei-Ying Ma, Hongjiang Zhang,
-  *Blur determination in the compressed domain using DCT information*,
+  [[http://research.microsoft.com/apps/pubs/default.aspx?id%3D68802][*Blur determination in the compressed domain using DCT information*]],
   Proceedings of the IEEE ICIP, pp.386-390,
   1999.
 
 [fn:liu-et-al] Ligang Liu, Renjie Chen, Lior Wolf, Daniel Cohen-Or,
-  *Optimizing Photo Composition*,
+  [[http://www.math.zju.edu.cn/ligangliu/CAGD/Projects/Composition/paper/Composition-TR-low.pdf][*Optimizing Photo Composition*]],
   Computer Graphics Forum, 29: 469-478,
   2010.
 
 [fn:ramakrishnan-thesis] Harish Ramakrishnan,
-  *Detection and Estimation of Image Blur*,
+  [[https://mospace.library.umsystem.edu/xmlui/bitstream/handle/10355/27889/NarayananRamakrishnan_2010.pdf?sequence%3D1][*Detection and Estimation of Image Blur*]],
   Master's Thesis,
   2010.
 
 [fn:shaked-tastl] Dored Shaked, Ingeborg Tastl,
-  *Sharpness Measure: Towards Automatic Image Enhancement*,
+  [[http://www.hpl.hp.com/techreports/2004/HPL-2004-84R2.pdf%E2%80%8E][*Sharpness Measure: Towards Automatic Image Enhancement*]],
   HPL-2004-84,
   2004.
 
 [fn:marziliano-et-al] Marziliano, P.; Dufaux, F.; Winkler, S.; Ebrahimi, T;
-  *A no-reference perceptual blur metric*,
+  [[http://stefan.winklerbros.net/Publications/icip2002.pdf][*A no-reference perceptual blur metric*]],
   Proceedings of International Conference on Image Processing,
   2002.
