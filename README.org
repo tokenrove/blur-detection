@@ -5,6 +5,8 @@ I obviously can't publish everything related to that work, I had
 retained the copyright to some of the low-level implementations
 exactly so that I could open source them later.
 
+(N.B.: This code is now explictly licensed, per the LICENSE file.)
+
 What follows are some notes I had written about a broader approach
 that was built on this code.  I expect that research in this area has
 since surpassed this approach.
