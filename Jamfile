@@ -3,7 +3,7 @@ BINDIR = ;
 
 #### Analysis programs
 
-CCFLAGS += -Wall -pedantic -std=c99 -O6 -fomit-frame-pointer -g -I/usr/local/include ;
+CCFLAGS += -Wall -Wextra -Wno-sign-compare -pedantic -std=c99 -O3 -g -I/usr/local/include ;
 LINKFLAGS += -L/usr/local/lib ;
 
 #if $(OS) = NT { CCFLAGS += -Iw32-build ; LINKFLAGS += -Lw32-build ; }
