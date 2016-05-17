@@ -54,7 +54,7 @@ static int operate_on_image(char *path)
 	 * point, because it seems to yield worse results compared to
 	 * simply adjusting the threshold. */
 
-	detect_blur(emap, w, h, threshold, min_zero, &da_ratio, &blur_extent);
+	detect_blur(emap, w, h, threshold, &da_ratio, &blur_extent);
 	printf("%s -- da_ratio: %f  blur_extent: %f\n", (da_ratio > min_zero) ? "sharp":"blurred",
 	       da_ratio, blur_extent);
 

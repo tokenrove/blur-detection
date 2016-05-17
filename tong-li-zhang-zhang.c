@@ -21,7 +21,7 @@
 
 /**** BLUR DETECTION ****/
 
-void detect_blur(float **emap, int w, int h, float threshold, float min_zero, float *da_ratio, float *blur_extent)
+void detect_blur(float **emap, int w, int h, float threshold, float *da_ratio, float *blur_extent)
 {
 	int n_edge, n_da, n_rg, n_brg;
 

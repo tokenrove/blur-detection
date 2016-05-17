@@ -348,7 +348,7 @@ static void calculate_TLZZ_sharpness_metric(struct block_metrics *block)
 	haar_transform(intensity, BLOCK_WIDTH, BLOCK_HEIGHT);
 	construct_edge_map(intensity, emap, BLOCK_WIDTH, BLOCK_HEIGHT);
 	// XXX add arguments
-	detect_blur(emap, BLOCK_WIDTH, BLOCK_HEIGHT, tlzz_threshold, min_zero, &da_ratio, &blur_extent);
+	detect_blur(emap, BLOCK_WIDTH, BLOCK_HEIGHT, tlzz_threshold, &da_ratio, &blur_extent);
 	block->sharpness = 1.0-blur_extent;
 }
 
