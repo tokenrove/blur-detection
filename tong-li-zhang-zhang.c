@@ -34,17 +34,17 @@ void detect_blur(float **emap, int w, int h, float threshold, float *da_ratio, f
 				int x,y;
 				x = k>>i; if(x >= (w>>i)) x = (w>>i)-1;
 				y = l>>i; if(y >= (h>>i)) y = (h>>i)-1;
-				p[i] = emap[i][x+y*(w>>i)];
+				p[i-1] = emap[i][x+y*(w>>i)];
 			}
 
-			if(p[1] > threshold || p[2] > threshold || p[3] > threshold) {
+			if(p[0] > threshold || p[1] > threshold || p[2] > threshold) {
 				n_edge++;
-				if(p[1] > p[2] && p[2] > p[3])
+				if(p[0] > p[1] && p[1] > p[2])
 					n_da++;
-				else if((p[1] < p[2] && p[2] < p[3]) || /* roof or gradual step */
-					(p[2] > p[1] && p[2] > p[3])) { /* roof only */
+				else if((p[0] < p[1] && p[1] < p[2]) || /* roof or gradual step */
+					(p[1] > p[0] && p[1] > p[2])) { /* roof only */
 					n_rg++;
-					if(p[1] < threshold) n_brg++;
+					if(p[0] < threshold) n_brg++;
 				}
 			}
 		}
