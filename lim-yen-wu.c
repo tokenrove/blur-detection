@@ -59,7 +59,7 @@ struct block_metrics
 	float brightness;
 	float mean_saturation;
 	float mean_hue;
-	int sky_ratio;
+	float sky_ratio;
 };
 
 struct figures_of_merit
