@@ -19,4 +19,15 @@ LINKLIBS on tong-li-zhang-zhang$(SUFEXE) += -lm -ljpeg ;
 
 LOCATE on blur-detection$(SUFEXE) marichal-ma-zhang$(SUFEXE) tong-li-zhang-zhang$(SUFEXE) = $(BINDIR) ;
 
-#### remainder excised
+#### Test suite
+
+rule PrepTests { Depends $(<) : $(>) ; }
+actions PrepTests { ./prep-test-suite.sh }
+PrepTests t/.prepared : prep-test-suite.sh ;
+
+ALWAYS test ;
+NOTFILE test ;
+DEPENDS all : test ;
+DEPENDS test : t/.prepared ;
+actions RunTests { prove -v t }
+RunTests test : exe ;
