@@ -482,6 +482,7 @@ static int operate_on_image(char *path)
 
 	output_metadata(&image);
 	image_close(image.handle);
+	free(image.blocks);
 	return 0;
 }
 
