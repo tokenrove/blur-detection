@@ -140,11 +140,14 @@ int image_hsi_of_block(void *image_, int x, int y, float *hue, float *saturation
 	int i, j, n, w, h;
 	unsigned char *rgb;
 
-	w = BLOCK_WIDTH; h = BLOCK_HEIGHT;
-	if(x+w > image_width(image_)) w -= image_width(image_)-x;
-	if(y+h > image_height(image_)) h -= image_height(image_)-y;
+	assert(3 == image_components(image_));
 
-	rgb = image->rgb + x + (y * bytes_per_scanline(image));
+	w = BLOCK_WIDTH; h = BLOCK_HEIGHT;
+	assert(x+w <= image_width(image_));
+	assert(y+h <= image_height(image_));
+
+	rgb = image->rgb;
+	rgb += image_components(image)*(x + (y * image_width(image)));
 	for(i = 0, n = 0; i < h; i++, rgb += 3*(image_width(image_)-w)) {
 		for(j = 0; j < w; j++, n++, rgb += 3, hue++, saturation++, intensity++) {
 			float r, g, b, sum;
