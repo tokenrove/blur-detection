@@ -172,7 +172,7 @@ static void compute_global_merits(struct image *image)
 	mean_bright_sharp /= n;
 	mean_bright_blur /= n;
 	mean_sat_sharp /= n;
-	mean_bright_blur /= n;
+	mean_sat_blur /= n;
 	image->merit.composition = composition_sum/n;
 	image->merit.brightness_idx = mean_bright_sharp-mean_bright_blur;
 	image->merit.saturation_idx = mean_sat_sharp-mean_sat_blur;
