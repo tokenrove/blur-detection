@@ -59,7 +59,7 @@ struct block_metrics
 	float brightness;
 	float mean_saturation;
 	float mean_hue;
-	int sky_ratio;
+	float sky_ratio;
 };
 
 struct figures_of_merit
@@ -142,15 +142,15 @@ static void compute_global_merits(struct image *image)
 {
 	float composition_sum, mean_bright_sharp, mean_bright_blur, mean_sat_sharp, mean_sat_blur;
 	float *sorted_sharpness;
-	int n, sharp_count;
+	size_t n, sharp_count, n_blocks;
 
-	sorted_sharpness = malloc(sizeof(float)*image->width_in_blocks*image->height_in_blocks);
+	n_blocks = image->width_in_blocks*image->height_in_blocks;
+	sorted_sharpness = malloc(sizeof(*sorted_sharpness)*n_blocks);
 	composition_sum = mean_bright_sharp = mean_bright_blur = mean_sat_sharp = mean_sat_blur = 0.0;
 	n = sharp_count = 0;
-	for(int i = 0; i < image->width_in_blocks*image->height_in_blocks; i++) {
+	for(size_t i = 0; i < n_blocks; ++i) {
 		if(image->blocks[i].sky_ratio > sky_threshold) continue;
-		n++;
-		sorted_sharpness[i] = image->blocks[i].sharpness;
+		sorted_sharpness[n++] = image->blocks[i].sharpness;
 		composition_sum += image->blocks[i].sharpness * thirds.weight[i];
 		if(image->blocks[i].sharpness > sharp_threshold) {
 			sharp_count++;
@@ -162,7 +162,7 @@ static void compute_global_merits(struct image *image)
 		}
 	}
 
-	qsort(sorted_sharpness, n, sizeof(float), float_cmp);
+	qsort(sorted_sharpness, n, sizeof(*sorted_sharpness), float_cmp);
 	if(n%2 == 0)
 		image->merit.median_sharpness = (sorted_sharpness[n/2]+sorted_sharpness[n/2-1])/2.0;
 	else
@@ -482,6 +482,7 @@ static int operate_on_image(char *path)
 
 	output_metadata(&image);
 	image_close(image.handle);
+	free(image.blocks);
 	return 0;
 }
 
