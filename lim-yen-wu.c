@@ -169,14 +169,12 @@ static void compute_global_merits(struct image *image)
 		image->merit.median_sharpness = sorted_sharpness[n/2];
 	free(sorted_sharpness);
 
-	mean_bright_sharp /= n;
-	mean_bright_blur /= n;
-	mean_sat_sharp /= n;
-	mean_sat_blur /= n;
 	image->merit.composition = composition_sum/n;
-	image->merit.brightness_idx = mean_bright_sharp-mean_bright_blur;
-	image->merit.saturation_idx = mean_sat_sharp-mean_sat_blur;
-	image->merit.density = (float)sharp_count/n;
+	image->merit.brightness_idx = mean_bright_sharp/(sharp_count + EPSILON_F) -
+				      mean_bright_blur/((n - sharp_count) + EPSILON_F);
+	image->merit.saturation_idx = mean_sat_sharp/(sharp_count + EPSILON_F) -
+				      mean_sat_blur/((n - sharp_count) + EPSILON_F);
+	image->merit.density = (float)sharp_count / n;
 }
 
 
